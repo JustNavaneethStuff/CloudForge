@@ -1,12 +1,12 @@
 # Copy to terraform.tfvars and fill in values
 # cp terraform.tfvars.example terraform.tfvars
 
-aws_region = "us-east-1"
+aws_region = "ap-south-2"
 environment = "dev"
 
 # After bootstrap, set these for GitHub OIDC:
 # state_bucket_arn = "arn:aws:s3:::cloudforge-terraform-state-ACCOUNT_ID"
-# lock_table_arn   = "arn:aws:dynamodb:us-east-1:ACCOUNT_ID:table/cloudforge-terraform-locks"
+# lock_table_arn   = "arn:aws:dynamodb:ap-south-2:ACCOUNT_ID:table/cloudforge-terraform-locks"
 # github_org       = "your-github-username"
 # enable_github_oidc = true
 

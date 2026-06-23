@@ -1,6 +1,6 @@
 # Copy to terraform.tfvars and fill in values
 
-aws_region  = "us-east-1"
+aws_region  = "ap-south-2"
 environment = "prod"
 
 vpc_cidr             = "10.1.0.0/16"
@@ -28,7 +28,7 @@ log_retention_days = 30
 log_level          = "WARNING"
 
 # state_bucket_arn = "arn:aws:s3:::cloudforge-terraform-state-ACCOUNT_ID"
-# lock_table_arn   = "arn:aws:dynamodb:us-east-1:ACCOUNT_ID:table/cloudforge-terraform-locks"
+# lock_table_arn   = "arn:aws:dynamodb:ap-south-2:ACCOUNT_ID:table/cloudforge-terraform-locks"
 # github_org       = "your-github-username"
 # enable_github_oidc = true
 # alert_email      = "you@example.com"

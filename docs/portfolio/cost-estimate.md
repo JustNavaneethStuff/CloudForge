@@ -1,6 +1,6 @@
 # Cost Estimate
 
-Monthly AWS costs for CloudForge at minimal sizing (us-east-1). Actual costs vary by usage.
+Monthly AWS costs for CloudForge at minimal sizing (ap-south-2, Hyderabad). Actual costs vary by usage.
 
 ## Development Environment
 

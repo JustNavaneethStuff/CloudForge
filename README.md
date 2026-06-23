@@ -41,6 +41,8 @@ VPC, Subnets, Security Groups, ALB, ECS Fargate, RDS PostgreSQL, ElastiCache Red
 4. [Docker](https://www.docker.com/) (for local image builds)
 5. GitHub repository with `dev` and `prod` environments
 
+**Default region:** `ap-south-2` (Asia Pacific — Hyderabad)
+
 ## Quick Start
 
 ```bash
@@ -49,7 +51,7 @@ make bootstrap
 
 # 2. Configure environment
 export AWS_PROFILE=cloudforge
-export AWS_REGION=us-east-1
+export AWS_REGION=ap-south-2
 
 # 3. Deploy
 make deploy ENV=dev

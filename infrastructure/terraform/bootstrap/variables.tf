@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region for bootstrap resources"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-2"
 }
 
 variable "state_bucket_name_prefix" {

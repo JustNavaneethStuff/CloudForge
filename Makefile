@@ -1,7 +1,7 @@
 .PHONY: help bootstrap plan apply deploy destroy validate lint test build-image
 
 ENV ?= dev
-AWS_REGION ?= us-east-1
+AWS_REGION ?= ap-south-2
 TF_DIR := infrastructure/terraform/environments/$(ENV)
 BOOTSTRAP_DIR := infrastructure/terraform/bootstrap
 

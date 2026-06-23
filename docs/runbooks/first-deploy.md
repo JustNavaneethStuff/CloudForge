@@ -24,6 +24,8 @@ gh --version
 
 ```powershell
 aws configure
+# Default region: ap-south-2
+# Default output: json
 aws sts get-caller-identity
 ```
 

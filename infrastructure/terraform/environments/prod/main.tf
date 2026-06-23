@@ -5,7 +5,7 @@ terraform {
     # Configured via backend.hcl or -backend-config flags
     # bucket         = "cloudforge-terraform-state-ACCOUNT_ID"
     # key            = "cloudforge/prod/terraform.tfstate"
-    # region         = "us-east-1"
+    # region         = "ap-south-2"
     # dynamodb_table = "cloudforge-terraform-locks"
     # encrypt        = true
   }

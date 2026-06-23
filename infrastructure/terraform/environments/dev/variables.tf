@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-2"
 }
 
 variable "environment" {
@@ -73,7 +73,7 @@ variable "rds_multi_az" {
 variable "rds_backup_retention" {
   description = "RDS backup retention days"
   type        = number
-  default     = 7
+  default     = 1
 }
 
 variable "rds_deletion_protection" {

@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BOOTSTRAP_DIR="$ROOT_DIR/infrastructure/terraform/bootstrap"
 
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-2}"
 export AWS_REGION
 
 echo "==> CloudForge Bootstrap"

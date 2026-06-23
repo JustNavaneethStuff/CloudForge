@@ -10,7 +10,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 TF_DIR="$ROOT_DIR/infrastructure/terraform/environments/$ENV"
 REPO="${GITHUB_REPO:-JustNavaneethStuff/CloudForge}"
 
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-2}"
 
 echo "==> Configuring GitHub secrets for $REPO (env: $ENV)"
 
