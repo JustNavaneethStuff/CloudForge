@@ -1,0 +1,37 @@
+# Copy to terraform.tfvars and fill in values
+
+aws_region  = "us-east-1"
+environment = "prod"
+
+vpc_cidr             = "10.1.0.0/16"
+public_subnet_cidrs  = ["10.1.1.0/24", "10.1.2.0/24"]
+private_subnet_cidrs = ["10.1.10.0/24", "10.1.20.0/24"]
+nat_gateway_count    = 2
+enable_vpc_endpoints = true
+
+rds_instance_class      = "db.t4g.small"
+rds_multi_az            = true
+rds_backup_retention    = 30
+rds_deletion_protection = true
+rds_skip_final_snapshot = false
+
+redis_node_type = "cache.t4g.small"
+
+ecs_cpu                = 512
+ecs_memory             = 1024
+ecs_desired_count      = 2
+ecs_enable_autoscaling = true
+ecs_min_capacity       = 2
+ecs_max_capacity       = 6
+
+log_retention_days = 30
+log_level          = "WARNING"
+
+# state_bucket_arn = "arn:aws:s3:::cloudforge-terraform-state-ACCOUNT_ID"
+# lock_table_arn   = "arn:aws:dynamodb:us-east-1:ACCOUNT_ID:table/cloudforge-terraform-locks"
+# github_org       = "your-github-username"
+# enable_github_oidc = true
+# alert_email      = "you@example.com"
+
+# enable_https = true
+# domain_name  = "example.com"

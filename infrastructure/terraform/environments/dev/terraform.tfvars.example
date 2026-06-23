@@ -1,0 +1,18 @@
+# Copy to terraform.tfvars and fill in values
+# cp terraform.tfvars.example terraform.tfvars
+
+aws_region = "us-east-1"
+environment = "dev"
+
+# After bootstrap, set these for GitHub OIDC:
+# state_bucket_arn = "arn:aws:s3:::cloudforge-terraform-state-ACCOUNT_ID"
+# lock_table_arn   = "arn:aws:dynamodb:us-east-1:ACCOUNT_ID:table/cloudforge-terraform-locks"
+# github_org       = "your-github-username"
+# enable_github_oidc = true
+
+# Optional alerting:
+# alert_email = "you@example.com"
+
+# HTTPS (Phase 9 — enable when domain is ready):
+# enable_https = true
+# domain_name  = "example.com"

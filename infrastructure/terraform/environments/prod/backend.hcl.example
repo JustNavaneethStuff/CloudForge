@@ -1,0 +1,5 @@
+bucket         = "cloudforge-terraform-state-REPLACE_ACCOUNT_ID"
+key            = "cloudforge/prod/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "cloudforge-terraform-locks"
+encrypt        = true

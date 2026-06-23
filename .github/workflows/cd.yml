@@ -1,0 +1,75 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      image_tag:
+        description: Docker image tag to deploy
+        required: false
+        default: latest
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.0
+
+      - name: Terraform init
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=cloudforge/${{ inputs.environment }}/terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE }}" \
+            -backend-config="encrypt=true"
+
+      - name: Terraform apply
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
+        run: |
+          terraform apply -auto-approve \
+            -var="image_tag=${{ inputs.image_tag }}" \
+            -var="github_org=${{ github.repository_owner }}" \
+            -var="enable_github_oidc=true" \
+            -var="state_bucket_arn=arn:aws:s3:::${{ secrets.TF_STATE_BUCKET }}" \
+            -var="lock_table_arn=arn:aws:dynamodb:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:table/${{ secrets.TF_LOCK_TABLE }}"
+
+      - name: Force ECS deployment
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
+        run: |
+          CLUSTER=$(terraform output -raw ecs_cluster_name)
+          SERVICE=$(terraform output -raw ecs_service_name)
+          aws ecs update-service \
+            --cluster "$CLUSTER" \
+            --service "$SERVICE" \
+            --force-new-deployment
+          aws ecs wait services-stable --cluster "$CLUSTER" --services "$SERVICE"
+
+      - name: Deployment summary
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
+        run: |
+          echo "API URL: $(terraform output -raw api_url)"
