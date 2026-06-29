@@ -15,9 +15,9 @@ End-to-end dev deployment verification after production upgrade.
 
 | Output | Value |
 |--------|-------|
-| VPC ID | `vpc-0945b0897c9da79b4` |
-| ALB DNS | `cloudforge-dev-alb-1036393328.ap-south-2.elb.amazonaws.com` |
-| API URL | `http://cloudforge-dev-alb-1036393328.ap-south-2.elb.amazonaws.com` |
+| VPC ID | `vpc-07b55dab2bb375981` |
+| ALB DNS | `cloudforge-dev-alb-692504719.ap-south-2.elb.amazonaws.com` |
+| API URL | `http://cloudforge-dev-alb-692504719.ap-south-2.elb.amazonaws.com` |
 | ECR URL | `195987551186.dkr.ecr.ap-south-2.amazonaws.com/cloudforge-dev` |
 | ECS Cluster | `cloudforge-dev-cluster` |
 | ECS Service | `cloudforge-dev-service` |
@@ -35,18 +35,20 @@ End-to-end dev deployment verification after production upgrade.
 
 ## Smoke Test
 
-Blocked: Docker Desktop was paused during image build/push. ECS reported `CannotPullContainerError` (no image in ECR).
+Docker image built and pushed to ECR after Docker Desktop was unpaused. ECS was force-redeployed and reached stable state.
 
-To complete smoke test locally:
-```bash
-# Unpause Docker Desktop, then:
-aws ecr get-login-password --region ap-south-2 | docker login --username AWS --password-stdin 195987551186.dkr.ecr.ap-south-2.amazonaws.com
-docker build -t 195987551186.dkr.ecr.ap-south-2.amazonaws.com/cloudforge-dev:latest app/
-docker push 195987551186.dkr.ecr.ap-south-2.amazonaws.com/cloudforge-dev:latest
-aws ecs update-service --cluster cloudforge-dev-cluster --service cloudforge-dev-service --force-new-deployment --region ap-south-2
-bash scripts/smoke-test.sh http://cloudforge-dev-alb-1036393328.ap-south-2.elb.amazonaws.com
-```
+| Endpoint | Status |
+|----------|--------|
+| `/health` | 200 |
+| `/api/v1/info` | 200 |
+| `/metrics` | 200 |
+| `/ready` | 200 |
 
 ## Teardown
 
 Dev environment and bootstrap destroyed after verification to avoid ongoing AWS charges.
+
+Teardown verification:
+
+- ECS cluster `cloudforge-dev-cluster`: `INACTIVE`
+- State bucket `cloudforge-terraform-state-195987551186`: not found (404)
