@@ -36,6 +36,11 @@ jobs:
       - name: Pytest
         run: pytest tests/ -v
 
+      - name: pip-audit dependency scan
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt
+
   build-and-scan:
     runs-on: ubuntu-latest
     needs: lint-and-test

@@ -115,3 +115,42 @@ resource "aws_appautoscaling_policy" "ecs_cpu" {
     scale_out_cooldown = 60
   }
 }
+
+resource "aws_appautoscaling_policy" "ecs_memory" {
+  count = var.enable_autoscaling ? 1 : 0
+
+  name               = "${var.name_prefix}-memory-scaling"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+    target_value       = 75.0
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
+}
+
+resource "aws_appautoscaling_policy" "ecs_alb_requests" {
+  count = var.enable_autoscaling && var.alb_arn_suffix != "" && var.target_group_arn_suffix != "" ? 1 : 0
+
+  name               = "${var.name_prefix}-alb-request-scaling"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label         = "${var.alb_arn_suffix}/${var.target_group_arn_suffix}"
+    }
+    target_value       = var.alb_requests_per_target
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
+}

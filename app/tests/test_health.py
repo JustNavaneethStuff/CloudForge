@@ -49,3 +49,9 @@ def test_ready_returns_200_when_dependencies_ok(client: TestClient) -> None:
         response = client.get("/ready")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+
+
+def test_metrics_endpoint_returns_prometheus_format(client: TestClient) -> None:
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert "http_requests_total" in response.text

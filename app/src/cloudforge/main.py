@@ -8,6 +8,9 @@ from cloudforge.config import get_settings
 from cloudforge.db import configure_logging, create_db_engine, create_redis_client
 from cloudforge.health import api_router
 from cloudforge.health import router as health_router
+from cloudforge.metrics import router as metrics_router
+from cloudforge.middleware import MetricsMiddleware
+from cloudforge.telemetry import setup_telemetry
 
 
 @asynccontextmanager
@@ -23,14 +26,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 def create_app() -> FastAPI:
+    settings = get_settings()
     app = FastAPI(
         title="CloudForge API",
         version=__version__,
         description="Cloud infrastructure platform API",
         lifespan=lifespan,
     )
+    if settings.metrics_enabled:
+        app.add_middleware(MetricsMiddleware)
     app.include_router(health_router)
     app.include_router(api_router)
+    if settings.metrics_enabled:
+        app.include_router(metrics_router)
+    setup_telemetry(app)
     return app
 
 

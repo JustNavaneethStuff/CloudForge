@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     redis_ssl: bool = False
     redis_auth_token: str = ""
 
+    metrics_enabled: bool = True
+    otel_exporter_otlp_endpoint: str = ""
+    otel_service_name: str = "cloudforge"
+
     @property
     def database_url(self) -> str:
         return (

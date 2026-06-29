@@ -1,0 +1,70 @@
+# Production-like local stack — built image, no source mounts, resource limits
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    image: cloudforge:prod
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      APP_ENV: prod
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: cloudforge
+      DB_USER: cloudforge
+      DB_PASSWORD: ${DB_PASSWORD:-cloudforge}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_SSL: "false"
+      METRICS_ENABLED: "true"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cloudforge
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cloudforge}
+      POSTGRES_DB: cloudforge
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudforge -d cloudforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:

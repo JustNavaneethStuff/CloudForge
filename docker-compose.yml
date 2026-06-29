@@ -1,0 +1,71 @@
+# Local development — app with hot reload, Postgres, Redis
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    command: >
+      uvicorn cloudforge.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+      --proxy-headers
+      --forwarded-allow-ips *
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - ./app/src:/app/src:ro
+    environment:
+      APP_ENV: dev
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: cloudforge
+      DB_USER: cloudforge
+      DB_PASSWORD: cloudforge
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_SSL: "false"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_SERVICE_NAME: cloudforge-dev
+      METRICS_ENABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cloudforge
+      POSTGRES_PASSWORD: cloudforge
+      POSTGRES_DB: cloudforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudforge -d cloudforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -49,3 +49,13 @@ output "redis_endpoint" {
   value       = module.elasticache.redis_endpoint
   sensitive   = true
 }
+
+output "storage_bucket_name" {
+  description = "Application S3 bucket name"
+  value       = module.storage.bucket_name
+}
+
+output "ssm_parameter_prefix" {
+  description = "SSM parameter path prefix"
+  value       = "/${local.name_prefix}"
+}

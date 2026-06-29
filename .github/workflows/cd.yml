@@ -73,3 +73,9 @@ jobs:
         working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
         run: |
           echo "API URL: $(terraform output -raw api_url)"
+
+      - name: Smoke test
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
+        run: |
+          API_URL=$(terraform output -raw api_url)
+          bash ../../../../scripts/smoke-test.sh "$API_URL"

@@ -19,6 +19,36 @@ variable "secrets_arns" {
   default     = []
 }
 
+variable "enable_secrets_access" {
+  description = "Grant ECS task execution role access to secrets_arns"
+  type        = bool
+  default     = false
+}
+
+variable "ssm_parameter_arns" {
+  description = "ARNs of SSM parameters the ECS task execution role can read"
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_ssm_access" {
+  description = "Grant ECS task execution role access to SSM parameters under name_prefix"
+  type        = bool
+  default     = false
+}
+
+variable "s3_bucket_name" {
+  description = "S3 bucket name the ECS task role can access"
+  type        = string
+  default     = ""
+}
+
+variable "enable_s3_access" {
+  description = "Grant ECS task role access to the app S3 bucket"
+  type        = bool
+  default     = false
+}
+
 variable "log_group_arn" {
   description = "CloudWatch log group ARN"
   type        = string

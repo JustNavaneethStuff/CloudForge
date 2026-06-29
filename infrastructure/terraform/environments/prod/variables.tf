@@ -207,3 +207,9 @@ variable "lock_table_arn" {
   type        = string
   default     = ""
 }
+
+variable "storage_force_destroy" {
+  description = "Allow S3 app bucket deletion when objects exist"
+  type        = bool
+  default     = false
+}

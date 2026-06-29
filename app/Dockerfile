@@ -1,5 +1,5 @@
 # Build stage
-FROM python:3.12-slim AS builder
+FROM python:3.12.8-slim-bookworm AS builder
 
 WORKDIR /build
 
@@ -15,7 +15,12 @@ COPY src/ src/
 RUN pip install --no-cache-dir --prefix=/install --no-deps .
 
 # Runtime stage
-FROM python:3.12-slim
+FROM python:3.12.8-slim-bookworm
+
+LABEL org.opencontainers.image.title="CloudForge API" \
+      org.opencontainers.image.description="CloudForge FastAPI backend" \
+      org.opencontainers.image.vendor="CloudForge" \
+      org.opencontainers.image.source="https://github.com/CloudForge"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl libpq5 \

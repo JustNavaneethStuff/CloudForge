@@ -37,6 +37,27 @@ module "secrets" {
   tags        = local.common_tags
 }
 
+module "storage" {
+  source = "../../modules/storage"
+
+  name_prefix   = local.name_prefix
+  force_destroy = var.storage_force_destroy
+  tags          = local.common_tags
+}
+
+module "parameters" {
+  source = "../../modules/parameters"
+
+  name_prefix = local.name_prefix
+  parameters = {
+    app_env         = var.environment
+    log_level       = var.log_level
+    metrics_enabled = "true"
+    storage_bucket  = module.storage.bucket_name
+  }
+  tags = local.common_tags
+}
+
 resource "aws_cloudwatch_log_group" "ecs" {
   name              = "/ecs/${local.name_prefix}"
   retention_in_days = var.log_retention_days
@@ -53,6 +74,10 @@ module "iam" {
   aws_region         = var.aws_region
   ecr_repository_arn = module.ecr.repository_arn
   secrets_arns       = module.secrets.all_secret_arns
+  enable_secrets_access = true
+  enable_ssm_access     = true
+  s3_bucket_name        = "${local.name_prefix}-app-${data.aws_caller_identity.current.account_id}"
+  enable_s3_access      = true
   log_group_arn      = aws_cloudwatch_log_group.ecs.arn
   github_org         = var.github_org
   github_repo        = var.github_repo
@@ -134,10 +159,14 @@ module "ecs" {
   enable_autoscaling      = var.ecs_enable_autoscaling
   min_capacity            = var.ecs_min_capacity
   max_capacity            = var.ecs_max_capacity
+  alb_arn_suffix          = module.alb.alb_arn_suffix
+  target_group_arn_suffix = module.alb.target_group_arn_suffix
 
   environment_variables = [
     { name = "APP_ENV", value = var.environment },
     { name = "LOG_LEVEL", value = var.log_level },
+    { name = "S3_BUCKET", value = module.storage.bucket_name },
+    { name = "SSM_PREFIX", value = "/${local.name_prefix}" },
     { name = "DB_HOST", value = module.rds.db_endpoint },
     { name = "DB_PORT", value = tostring(module.rds.db_port) },
     { name = "DB_NAME", value = module.secrets.db_name },

@@ -34,7 +34,25 @@ fi
 
 echo "==> Step 1/3: Terraform apply..."
 cd "$TF_DIR"
-terraform init -upgrade
+
+STATE_BUCKET="${TF_STATE_BUCKET:-}"
+LOCK_TABLE="${TF_LOCK_TABLE:-}"
+
+if [ -z "$STATE_BUCKET" ] && [ -f backend.hcl ]; then
+  STATE_BUCKET=$(grep -E '^\s*bucket\s*=' backend.hcl | sed 's/.*=\s*"\(.*\)"/\1/')
+  LOCK_TABLE=$(grep -E '^\s*dynamodb_table\s*=' backend.hcl | sed 's/.*=\s*"\(.*\)"/\1/')
+fi
+
+if [ -n "$STATE_BUCKET" ] && [ -n "$LOCK_TABLE" ]; then
+  terraform init -upgrade \
+    -backend-config="bucket=${STATE_BUCKET}" \
+    -backend-config="key=cloudforge/${ENV}/terraform.tfstate" \
+    -backend-config="region=${AWS_REGION}" \
+    -backend-config="dynamodb_table=${LOCK_TABLE}" \
+    -backend-config="encrypt=true"
+else
+  terraform init -upgrade
+fi
 
 if [ "$ENV" = "prod" ]; then
     terraform apply

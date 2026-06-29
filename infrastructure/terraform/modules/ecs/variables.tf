@@ -103,6 +103,24 @@ variable "max_capacity" {
   default     = 4
 }
 
+variable "alb_arn_suffix" {
+  description = "ALB ARN suffix for request-count autoscaling"
+  type        = string
+  default     = ""
+}
+
+variable "target_group_arn_suffix" {
+  description = "Target group ARN suffix for request-count autoscaling"
+  type        = string
+  default     = ""
+}
+
+variable "alb_requests_per_target" {
+  description = "Target ALB requests per target for autoscaling"
+  type        = number
+  default     = 1000
+}
+
 variable "tags" {
   description = "Additional tags"
   type        = map(string)
